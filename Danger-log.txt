@@ -1,0 +1,7 @@
+Danger log
+1.Database Error: Started non-transaction while transaction<READ COMMITTED> still active. How to solve: when work and non-transaction are in the same chunk, we use try to hold the non-transaction, when the code run out of the try chunk, the non-transaction will call its destructor.
+2. Database Error: Started transaction while transaction<READ COMMITTED> still active. How to solve: When we connect with the SQL, we should disconnect it before the accept. And reconnect in each thread, then disconnect when the thread is going to end.
+3.For database operation, sometimes I forget to execute the previous query and move on to the next one, and wrong behavior occurs. So, it is important to remember to execute the command wrote.
+4. For database operation, the sstream is used to hold the database command. It is important not to forget to clear the stringstream (str(""))before moving on to the next one.
+5. For each cancel, the cancel id should be the same as account id, but the query id could be not same as the account id.
+6. If the amount of buy order is more than the amount of sell order in the database, we should change the status of a part of buy order to executed and insert a new buy order with the rest of the amount. The sell order is with the same situation.
