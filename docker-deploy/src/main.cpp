@@ -31,30 +31,48 @@ void *handle(void* para){
     int client_fd=p->client_fd;
     std::string ip=p->ip;
     size_t lengthXML = 0;
-    int len = recv(client_fd, (char*)&lengthXML, sizeof(size_t), MSG_WAITALL);
+    //int len = recv(client_fd, (char*)&lengthXML, sizeof(size_t), MSG_WAITALL);
     //std::cout<<lengthXML<<std::endl;
-    
+    /*
     if (len <= 0 || lengthXML == 0) {
         close(client_fd);
         delete p;
         return nullptr;
-	}
-    std::vector<char> store;
+	  }*/
+    
+    std::vector<char> store(65532,0);
+    int size = recv(client_fd, store.data(), store.size(), 0);
+    bool first=true;
+    size_t temptemp=0;/*
     while(true){
       std::vector<char> temp(1,0);
       int size = recv(client_fd, temp.data(), temp.size(), 0);
+      if(temp[0]=='\n'&& first){
+        std::vector<char> tempstore=store;
+        temptemp=store.size();
+        tempstore.push_back('\0');
+        std::string tempstring=tempstore.data();
+        lengthXML=stoi(tempstring);
+        first=false;
+      }
       if(size==0){
         break;
       }
       for(int i=0;i<size;i++){
         store.push_back(temp[i]);
       }
-      if(store.size()==lengthXML){
+      
+      if(store.size()==lengthXML+temptemp+1){
         store.push_back('\0');
         break;
       }
-    }
-    std::string request(store.data());
+    }*/
+
+    std::string temprecv=(store.data());
+    size_t findline=temprecv.find("\n");
+    lengthXML=stoi(temprecv.substr(0,findline));
+    std::string request=temprecv.substr(findline+1,lengthXML); 
+    //std::string request(store.data());
     std::cout<<request<<std::endl;
     TEMP T;
     pqxx::connection *C = nullptr;
@@ -78,8 +96,10 @@ void *handle(void* para){
     C->disconnect();
     std::cout<<respond<<std::endl;
     size_t sendsize=respond.size();
-    send(client_fd,(char*)&sendsize,sizeof(size_t),0);
-    send(client_fd,respond.c_str(),respond.size(),0);
+    std::string fres=std::to_string(sendsize)+"\n"+respond;
+    //send(client_fd,(char*)&sendsize,sizeof(size_t),0);
+    //send(client_fd,respond.c_str(),respond.size(),0);
+    send(client_fd,fres.c_str(),fres.size(),0);
     close(client_fd);
     if(p->test){
       struct timespec  end;

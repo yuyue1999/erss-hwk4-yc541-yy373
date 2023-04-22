@@ -170,14 +170,27 @@ int main(int argc, char ** argv){
     std::string ip(host_name);
     int times=10;
     Socket S;
+    int socketfd=connectTo(ip);
+    std::string request="173\n<?xml version=\"1.0\" encoding=\"UTF-8\"?><create><account id=\"123456\" balance=\"1000\"/><symbol sym=\"SPY\"><account id=\"123456\">100000</account></symbol></create>";
+    send(socketfd, request.c_str(), request.size(), 0);
+    std::vector<char> store(65532,0);
+    int size = recv(socketfd, store.data(), store.size(), 0);
+    //std::vector<char> store=S.receiveall(socketfd);
+    std::string respond(store.data());
+    std::cout<<respond<<std::endl;
     //101 102 103 104 105 106
+    /*
     for(int i=1;i<8;i++){
     int socketfd=connectTo(ip);
+
+    /*
+
     std::string request;
     request="<create><account id=\""+std::to_string(i+100)+"\" balance=\"1000000\"/><symbol sym=\"SPY\"><account id=\""+std::to_string(i+100)+"\">100000</account></symbol></create>";
     size_t size = request.size();
-    send(socketfd, (char*)&size, sizeof(size_t),0);
-    send(socketfd, request.c_str(), request.size(), 0);
+    std::string request1=std::to_string(size)+"\n"+request;
+    //send(socketfd, (char*)&size, sizeof(size_t),0);
+    send(socketfd, request1.c_str(), request1.size(), 0);
     
     size_t length= 0;
     recv(socketfd, (char *)&length, sizeof(size_t), MSG_WAITALL);
@@ -286,6 +299,8 @@ int main(int argc, char ** argv){
     std::cout<<respond6<<std::endl;
     
     close(socketfd);
-
+    */
+   return 1;
+  
 }
 

@@ -25,7 +25,7 @@ class Socket{
 public:
     int BuildSocket();
     int ConnectTo(std::string &ip);
-    std::vector<char> receiveall(int socketfd, int length){
+    std::vector<char> receiveall(int socketfd){
         std::vector<char> store;
         while(true){
             std::vector<char> temp(1,0);
@@ -36,7 +36,8 @@ public:
             for(int i=0;i<size;i++){
                 store.push_back(temp[i]);
             }
-            if(store.size()==length){
+            
+            if(store.size()==0){
                 store.push_back('\0');
                 break;
             }
